@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Proyecto Cumpleaños - Biosfera!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Fredoka:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <style>
+        :root {
+            --blueprint-blue: #0f4c81;
+            --blueprint-line: rgba(255, 255, 255, 0.3);
+            --sketch-paper: #f4f1ea;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #1a1a2e;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        /* Continuous Animations */
+        @keyframes pulse-glow {
+            0%, 100% { filter: drop-shadow(0 0 15px rgba(255, 223, 0, 0.8)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 30px rgba(255, 223, 0, 1)); transform: scale(1.05); }
+        }
+        .animate-bulb { animation: pulse-glow 2s infinite ease-in-out; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+        .animate-float { animation: float 4s infinite ease-in-out; }
+
+        @keyframes swing {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+        .animate-swing { animation: swing 3s infinite ease-in-out; transform-origin: top center; }
+
+        /* Blueprint Grid Background */
+        .blueprint-bg {
+            background-color: var(--blueprint-blue);
+            background-image: 
+                linear-gradient(var(--blueprint-line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--blueprint-line) 1px, transparent 1px),
+                linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+            background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+        }
+
+        /* Drawing Animation */
+        .sketch-path {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+        }
+
+        /* Fonts */
+        .font-handwritten { font-family: 'Caveat', cursive; }
+        .font-technical { font-family: 'Share Tech Mono', monospace; }
+
+        /* Scene Container */
+        .scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transform-origin: center center;
+        }
+
+        #scene1 { opacity: 1; visibility: visible; background-color: #ff9f43; z-index: 10; }
+        #scene2 { background-color: #8c5a2b; z-index: 9; } /* Wood desk */
+        #scene3 { z-index: 8; }
+        #scene4 { background-color: #74b9ff; z-index: 7; }
+
+        /* UI Button */
+        .action-btn {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            z-index: 50;
+            background: #ff4757;
+            color: white;
+            border: 4px solid #2f3542;
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 6px 6px 0px #2f3542;
+            transition: all 0.2s;
+        }
+        .action-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: 2px 2px 0px #2f3542;
+        }
+        .action-btn:disabled {
+            background: #a4b0be;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 6px 6px 0px #2f3542;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ESCENA 1: LA IDEA -->
+    <section id="scene1" class="scene">
+        <div class="relative flex flex-col items-center animate-float w-full max-w-3xl px-4">
+            <!-- Lightbulb SVG -->
+            <svg class="w-48 h-48 md:w-64 md:h-64 animate-bulb mb-8 z-10" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 5C33.4 5 20 18.4 20 35C20 45.6 25.5 54.9 33.6 60.1V75C33.6 77.8 35.8 80 38.6 80H61.4C64.2 80 66.4 77.8 66.4 75V60.1C74.5 54.9 80 45.6 80 35C80 18.4 66.6 5 50 5Z" fill="#F1C40F" stroke="#2C3E50" stroke-width="3"/>
+                <path d="M40 85H60V90C60 92.8 57.8 95 55 95H45C42.2 95 40 92.8 40 90V85Z" fill="#BDC3C7" stroke="#2C3E50" stroke-width="3"/>
+                <path d="M50 25V45M40 30L45 45M60 30L55 45" stroke="#E67E22" stroke-width="4" stroke-linecap="round"/>
+                <path d="M33 60H67M35 68H65M38 76H62" stroke="#2C3E50" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+            
+            <!-- Sticky Note integrated text -->
+            <div class="bg-yellow-100 p-8 rounded-lg shadow-2xl transform rotate-3 border-2 border-yellow-300 relative w-full md:w-4/5 text-center" id="idea-note">
+                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-red-500 rounded-full border-4 border-gray-800 shadow-md"></div>
+                <h1 class="text-3xl md:text-5xl font-bold text-gray-800 mb-4 tracking-wide">¡SE PRENDIÓ EL FOCO!</h1>
+                <p class="text-xl md:text-3xl text-gray-700 font-semibold">
+                    Proyecto Maestro: Celebrar a la mejor Arquitecta y Gerenta de <span class="text-green-600 font-bold">Biosfera</span>.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ESCENA 2: EL BOCETO -->
+    <section id="scene2" class="scene">
+        <!-- Desk items -->
+        <div class="absolute top-10 left-10 w-32 h-32 bg-white rounded-full border-8 border-gray-300 shadow-xl opacity-50"></div> <!-- Coffee cup base -->
+        
+        <div class="relative w-full max-w-4xl h-[80vh] bg-[#f4f1ea] shadow-2xl transform -rotate-2 border-2 border-gray-300 overflow-hidden flex items-center justify-center p-10" id="sketch-pad">
+            
+            <!-- Grid lines for sketchpad -->
+            <div class="absolute inset-0 opacity-20" style="background-image: linear-gradient(#ccc 1px, transparent 1px), linear-gradient(90deg, #ccc 1px, transparent 1px); background-size: 20px 20px;"></div>
+            
+            <div class="z-10 text-center flex flex-col items-center">
+                <svg class="w-32 h-32 mb-4" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path class="sketch-path" id="house-sketch" d="M10 50L50 15L90 50M20 42V90H80V42M40 90V60H60V90M30 50H45V65H30V50Z" stroke="#2C3E50" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <div class="font-handwritten text-4xl md:text-5xl text-gray-800 leading-relaxed max-w-2xl transform rotate-1">
+                    <span class="block text-5xl md:text-6xl text-blue-600 mb-2 font-bold">Fase 1: El Diseño</span>
+                    Trazando líneas para la obra más divertida del año. ¡No podíamos dejar tu cumpleaños en un simple borrador!
+                </div>
+            </div>
+
+            <!-- Pencil Graphic -->
+            <div class="absolute -right-10 -bottom-10 transform -rotate-45 w-64 h-16 bg-yellow-400 border-4 border-gray-800 rounded-r-full shadow-lg flex items-center z-20">
+                <div class="w-16 h-full bg-pink-400 border-r-4 border-gray-800 rounded-l-full"></div>
+                <div class="w-8 h-full bg-gray-300 border-r-4 border-gray-800"></div>
+                <div class="flex-grow"></div>
+                <div class="w-16 h-0 border-t-[32px] border-t-transparent border-b-[32px] border-b-transparent border-l-[40px] border-l-yellow-200 relative right-[-36px]"></div>
+                <div class="w-4 h-0 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent border-l-[10px] border-l-gray-800 absolute right-[-46px]"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ESCENA 3: EL PLANO -->
+    <section id="scene3" class="scene blueprint-bg">
+        <div class="relative w-[90%] h-[90%] border-4 border-white flex flex-col items-center justify-center p-8" id="blueprint-board">
+            
+            <!-- Corner Technical Marks -->
+            <div class="absolute top-4 left-4 w-12 h-12 border-t-4 border-l-4 border-white opacity-70"></div>
+            <div class="absolute top-4 right-4 w-12 h-12 border-t-4 border-r-4 border-white opacity-70"></div>
+            <div class="absolute bottom-4 left-4 w-12 h-12 border-b-4 border-l-4 border-white opacity-70"></div>
+            <div class="absolute bottom-4 right-4 w-12 h-12 border-b-4 border-r-4 border-white opacity-70"></div>
+
+            <!-- Compass SVG -->
+            <svg class="absolute top-10 right-10 w-24 h-24 opacity-50 animate-spin" style="animation-duration: 20s;" viewBox="0 0 100 100" fill="none">
+                <circle cx="50" cy="50" r="45" stroke="white" stroke-width="2"/>
+                <path d="M50 5L60 40L95 50L60 60L50 95L40 60L5 50L40 40L50 5Z" stroke="white" stroke-width="2"/>
+            </svg>
+
+            <!-- Embedded Technical Specs -->
+            <div class="w-full max-w-4xl border-2 border-white p-6 md:p-10 font-technical text-white bg-[rgba(255,255,255,0.1)] backdrop-blur-sm shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                <h2 class="text-4xl md:text-6xl border-b-4 border-white pb-4 mb-6 tracking-widest uppercase">PROYECTO: FIESTA SORPRESA</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-xl md:text-2xl">
+                    <div>
+                        <p class="mb-4"><span class="font-bold text-yellow-300">CÓDIGO DE OBRA:</span> CUMPLE-BIO-2026</p>
+                        <p class="mb-4"><span class="font-bold text-yellow-300">ARQUITECTA JEFA:</span> ¡TÚ!</p>
+                        <p class="mb-4"><span class="font-bold text-yellow-300">ESTRUCTURA:</span> 100% Diversión, 0% Estrés</p>
+                    </div>
+                    <div class="border-l-2 border-dashed border-white pl-8">
+                        <p class="mb-4"><span class="font-bold text-yellow-300">FECHA DE INICIO:</span> 29 de septiembre</p>
+                        <p class="mb-4"><span class="font-bold text-yellow-300">COORDENADAS:</span> Top Secret (oficina)</p>
+                        <p class="mb-4"><span class="font-bold text-yellow-300">ESTADO:</span> Planos Aprobados por Biosfera.</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 border-t-2 border-white pt-4 text-center">
+                    <p class="text-3xl text-green-300 uppercase tracking-widest font-bold">SELLO DE APROBACIÓN CONCEDIDO</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ESCENA 4: LA CONSTRUCCIÓN -->
+    <section id="scene4" class="scene">
+        <!-- Clouds -->
+        <div class="absolute top-10 left-10 w-32 h-16 bg-white rounded-full opacity-80 animate-float" style="filter: blur(2px);"></div>
+        <div class="absolute top-24 right-20 w-48 h-20 bg-white rounded-full opacity-60 animate-float" style="animation-delay: 1s; filter: blur(2px);"></div>
+
+        <div class="relative w-full h-full flex flex-col items-center justify-end pb-20" id="construction-site">
+            
+            <!-- Crane -->
+            <div class="absolute left-[-50px] bottom-0 h-[80vh] w-12 bg-yellow-500 border-4 border-gray-800 z-30" id="crane-tower">
+                <div class="absolute top-0 left-0 w-[60vw] h-10 bg-yellow-500 border-4 border-gray-800 origin-left" id="crane-arm">
+                    <!-- Banner hanging from crane -->
+                    <div class="absolute right-10 top-10 flex flex-col items-center animate-swing z-40" id="celebration-banner">
+                        <div class="w-1 h-20 bg-gray-800"></div>
+                        <div class="bg-red-500 text-white font-black text-3xl md:text-6xl p-8 border-4 border-gray-800 shadow-[8px_8px_0_#2d3436] transform -rotate-3 text-center max-w-[80vw] md:max-w-3xl rounded-xl">
+                            <span class="block text-yellow-300 text-2xl md:text-4xl mb-4">¡OBRA EN PROCESO!</span>
+                            ¡VEN A CONSTRUIR RECUERDOS INOLVIDABLES EN TU FIESTA!
+                            <span class="block text-xl md:text-3xl mt-4 font-normal font-handwritten">¡Te esperamos para celebrar, JACKELINE!</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brick wall rising up -->
+            <div class="w-full h-32 md:h-64 bg-red-700 border-t-8 border-gray-800 relative z-20 flex flex-wrap content-start" id="brick-wall">
+                <!-- CSS Bricks via pseudo-elements/background -->
+                <div class="absolute inset-0 opacity-50" style="background-image: linear-gradient(335deg, rgba(255,255,255,0.2) 23px, transparent 23px), linear-gradient(155deg, rgba(255,255,255,0.2) 23px, transparent 23px), linear-gradient(335deg, rgba(255,255,255,0.2) 23px, transparent 23px), linear-gradient(155deg, rgba(255,255,255,0.2) 23px, transparent 23px); background-size: 58px 58px; background-position: 0px 2px, 4px 35px, 29px 31px, 34px 6px;"></div>
+                <div class="absolute -top-10 w-full h-10 bg-yellow-400 border-y-4 border-gray-800 repeating-linear-gradient" style="background: repeating-linear-gradient(45deg, #f1c40f, #f1c40f 20px, #2c3e50 20px, #2c3e50 40px);"></div>
+            </div>
+            
+        </div>
+    </section>
+
+    <button id="nextBtn" class="action-btn">Aprobar Fase 📝</button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", (event) => {
+            gsap.registerPlugin();
+
+            const btn = document.getElementById('nextBtn');
+            let currentScene = 1;
+            const totalScenes = 4;
+
+            // Initial animation for scene 1
+            gsap.from("#idea-note", {y: 100, opacity: 0, duration: 1, ease: "back.out(1.7)", delay: 0.5});
+
+            const labels = ["", "Aprobar Boceto ✏️", "Aprobar Planos 📐", "¡Inaugurar Obra! 🏗️"];
+
+            btn.addEventListener('click', () => {
+                if (currentScene >= totalScenes) {
+                    // Celebration fireworks or shake on last click
+                    gsap.to("#celebration-banner", {
+                        scale: 1.1,
+                        duration: 0.2,
+                        yoyo: true,
+                        repeat: 3
+                    });
+                    return;
+                }
+
+                btn.disabled = true;
+
+                if (currentScene === 1) {
+                    // Transition 1 -> 2: Zoom into the sticky note
+                    const tl = gsap.timeline({ onComplete: enableBtn });
+                    tl.to("#scene1", { scale: 5, opacity: 0, duration: 1.2, ease: "power2.inOut" })
+                      .set("#scene1", { visibility: "hidden" })
+                      .set("#scene2", { visibility: "visible", opacity: 1 })
+                      .from("#sketch-pad", { scale: 0.5, opacity: 0, rotation: -10, duration: 1, ease: "back.out(1.2)" }, "-=0.5")
+                      .to("#house-sketch", { strokeDashoffset: 0, duration: 1.5, ease: "power1.inOut" }, "-=0.2");
+                } 
+                else if (currentScene === 2) {
+                    // Transition 2 -> 3: Zoom into the sketchpad lines to reveal blueprint
+                    const tl = gsap.timeline({ onComplete: enableBtn });
+                    tl.to("#scene2", { scale: 3, x: -500, opacity: 0, duration: 1.2, ease: "power3.inOut" })
+                      .set("#scene2", { visibility: "hidden" })
+                      .set("#scene3", { visibility: "visible", opacity: 1 })
+                      .from(".blueprint-bg", { backgroundSize: "10px 10px", duration: 1.5, ease: "power2.out" }, "-=1")
+                      .from("#blueprint-board", { scale: 0.8, opacity: 0, y: 50, duration: 1, ease: "power2.out" }, "-=0.8");
+                }
+                else if (currentScene === 3) {
+                    // Transition 3 -> 4: Blueprint drops down to reveal construction
+                    const tl = gsap.timeline({ onComplete: enableBtn });
+                    tl.to("#scene3", { y: "100%", opacity: 0, duration: 1.2, ease: "power2.in" })
+                      .set("#scene3", { visibility: "hidden" })
+                      .set("#scene4", { visibility: "visible", opacity: 1 })
+                      .from("#brick-wall", { y: 300, duration: 1, ease: "bounce.out" })
+                      .from("#crane-arm", { rotation: -45, duration: 1.5, ease: "elastic.out(1, 0.5)" }, "-=0.5")
+                      .from("#celebration-banner", { y: -500, opacity: 0, duration: 1.2, ease: "bounce.out" }, "-=1");
+                    
+                    btn.innerHTML = "¡Nos Vemos Pronto! 🎉";
+                    btn.style.background = "#2ed573";
+                }
+
+                currentScene++;
+                if(currentScene < totalScenes) {
+                    btn.innerHTML = labels[currentScene];
+                }
+
+                function enableBtn() {
+                    if (currentScene < totalScenes) {
+                        btn.disabled = false;
+                    } else {
+                        btn.disabled = false; // keep enabled for a fun bounce effect on the banner
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
